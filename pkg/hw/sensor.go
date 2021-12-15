@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/karalabe/hid"
 	"github.com/rs/zerolog/log"
@@ -34,7 +35,7 @@ type Reading struct {
 	Channel     int
 	Temperature float32
 	Humidity    int8
-	Present     bool
+	Time        time.Time
 }
 
 func fromBytes(raw []byte) ([]*Reading, error) {
@@ -61,7 +62,7 @@ func fromBytes(raw []byte) ([]*Reading, error) {
 			Channel:     i + 1,
 			Temperature: float32(int(binary.BigEndian.Uint16(raw[j:j+2]))) / 10,
 			Humidity:    int8(raw[j+2]),
-			Present:     true,
+			Time:        time.Now(),
 		})
 	}
 

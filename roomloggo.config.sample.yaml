@@ -1,0 +1,5 @@
+influx-db:
+  base-url: "<YOUR INFLUXDB>"
+  api-token: "<YOUR API TOKEN>"
+  org: "<YOUR ORG>"
+  bucket: "<YOUR BUCKET>"

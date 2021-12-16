@@ -55,5 +55,7 @@ func main() {
 		log.Fatal().Err(err).Msg("Failed to setup client for InfluxDB")
 	}
 
+	log.Info().Msg("Setup completed, starting to log data...")
+
 	meter.StartLoop(influxClient, cfg.ReadInterval)
 }

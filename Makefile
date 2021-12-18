@@ -1,4 +1,4 @@
-.PHONY: image build run run-container clean push-image
+.PHONY: image build run run-container clean push-image test
 
 bin := ./bin/roomloggo
 image_built := ./bin/image_built
@@ -25,6 +25,10 @@ clean:
 
 
 push-image: $(image_pushed)
+
+
+test:
+	go test ./...
 
 
 $(image_pushed): $(image_built)

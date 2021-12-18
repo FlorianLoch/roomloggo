@@ -1,4 +1,4 @@
-package meter
+package sensor
 
 import (
 	"time"
@@ -9,7 +9,7 @@ import (
 	"github.com/florianloch/roomloggo/pkg/hw"
 )
 
-func StartLoop(upstream internal.MeasurementProcessor, interval time.Duration) {
+func StartLoop(interval time.Duration, upstream ...internal.MeasurementsProcessor) {
 	t := time.NewTicker(interval)
 	defer t.Stop()
 
@@ -18,9 +18,19 @@ func StartLoop(upstream internal.MeasurementProcessor, interval time.Duration) {
 			log.Error().Err(err).Msg("Failed to read data from station")
 		} else {
 			// Run this asynchronously, just as a defensive measure in order to avoid a varying reading frequency
-			go upstream.Process(readings)
+			go func() {
+				for _, u := range upstream {
+					u.Process(readings)
+				}
+			}()
 		}
 
 		<-t.C
+	}
+}
+
+func LogReadings(readings []*hw.Reading) {
+	for _, r := range readings {
+		log.Info().Float32("temperature", r.Temperature).Int8("humidity", r.Humidity).Msgf("%s:", r.Sensor)
 	}
 }

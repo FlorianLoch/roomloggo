@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/karalabe/hid"
@@ -32,7 +33,7 @@ var readRequestBytes = func() []byte {
 }()
 
 type Reading struct {
-	Channel     int
+	Sensor      string
 	Temperature float32
 	Humidity    int8
 	Time        time.Time
@@ -59,7 +60,7 @@ func fromBytes(raw []byte) ([]*Reading, error) {
 		}
 
 		readings = append(readings, &Reading{
-			Channel:     i + 1,
+			Sensor:      strconv.Itoa(i + 1), // derviced from the channel used by the sensor
 			Temperature: float32(int(binary.BigEndian.Uint16(raw[j:j+2]))) / 10,
 			Humidity:    int8(raw[j+2]),
 			Time:        time.Now(),

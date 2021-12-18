@@ -3,3 +3,9 @@ influx-db:
   api-token: "<YOUR API TOKEN>"
   org: "<YOUR ORG>"
   bucket: "<YOUR BUCKET>"
+sensor:
+  interval: "1m"
+  names:
+    - "Room 1"
+    - "Room 2"
+    - "Room 3"

@@ -10,9 +10,10 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	"github.com/florianloch/roomloggo/internal"
 	"github.com/florianloch/roomloggo/internal/config"
 	"github.com/florianloch/roomloggo/internal/influx"
-	"github.com/florianloch/roomloggo/internal/meter"
+	"github.com/florianloch/roomloggo/internal/sensor"
 	"github.com/florianloch/roomloggo/pkg/hw"
 )
 
@@ -57,5 +58,8 @@ func main() {
 
 	log.Info().Msg("Setup completed, starting to log data...")
 
-	meter.StartLoop(influxClient, cfg.ReadInterval)
+	sensor.StartLoop(cfg.Sensor.Interval,
+		sensor.NewIDToNameMapper(cfg.Sensor.Names),
+		internal.ProcessFn(sensor.LogReadings),
+		influxClient)
 }

@@ -3,6 +3,7 @@ package hw
 import (
 	"encoding/hex"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 )
@@ -18,35 +19,35 @@ func Test_fromBytes(t *testing.T) {
 
 	expectedReadings := []*Reading{
 		{
-			Channel:     1,
+			Sensor:      "1",
 			Temperature: 16,
 			Humidity:    62,
-			Present:     true,
 		},
 		{
-			Channel:     2,
+			Sensor:      "2",
 			Temperature: 16.5,
 			Humidity:    64,
-			Present:     true,
 		},
 		{
-			Channel:     3,
+			Sensor:      "3",
 			Temperature: 20.8,
 			Humidity:    52,
-			Present:     true,
 		},
 		{
-			Channel:     4,
+			Sensor:      "4",
 			Temperature: 18.1,
 			Humidity:    61,
-			Present:     true,
 		},
+		// Sensor 5 is not active
 		{
-			Channel:     6,
+			Sensor:      "6",
 			Temperature: 3.7,
 			Humidity:    75,
-			Present:     true,
 		},
+	}
+
+	for i := range readings {
+		readings[i].Time = time.Time{} // "unset the time" in order to make the structs comparable
 	}
 
 	require.Equal(t, expectedReadings, readings)

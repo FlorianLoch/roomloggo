@@ -47,7 +47,7 @@ func (i *InfluxPush) Process(readings []*hw.Reading) {
 
 	for i, reading := range readings {
 		points[i] = influxdb2.NewPointWithMeasurement("climate").
-			AddField("channel", reading.Channel).
+			AddTag("sensor", reading.Sensor).
 			AddField("temperature", reading.Temperature).
 			AddField("humidity", reading.Humidity).
 			SetTime(reading.Time)

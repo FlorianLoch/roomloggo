@@ -31,6 +31,6 @@ func StartLoop(interval time.Duration, upstream ...internal.MeasurementsProcesso
 
 func LogReadings(readings []*hw.Reading) {
 	for _, r := range readings {
-		log.Info().Float32("temperature", r.Temperature).Int8("humidity", r.Humidity).Msgf("%s:", r.Sensor)
+		log.Info().Float64("temperature", r.Temperature).Int8("humidity", r.Humidity).Msgf("%s:", r.Sensor)
 	}
 }

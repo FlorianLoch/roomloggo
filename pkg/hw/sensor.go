@@ -33,8 +33,10 @@ var readRequestBytes = func() []byte {
 }()
 
 type Reading struct {
-	Sensor      string
-	Temperature float32
+	Sensor string
+	// float32 would be sufficient, but in most cases float64 will be needed eventually; as the conversion between
+	// float32 and float64 is not really smooth we go with float64 straight away
+	Temperature float64
 	Humidity    int8
 	Time        time.Time
 }
@@ -60,8 +62,13 @@ func fromBytes(raw []byte) ([]*Reading, error) {
 		}
 
 		readings = append(readings, &Reading{
-			Sensor:      strconv.Itoa(i + 1), // derviced from the channel used by the sensor
-			Temperature: float32(int(binary.BigEndian.Uint16(raw[j:j+2]))) / 10,
+			Sensor: strconv.Itoa(i + 1), // derived from the channel used by the sensor
+			// Whappens here:
+			// - take the two bytes containing the temperature
+			// - decode them as Uint16
+			// - convert to / interpret as signed 16-bit integer
+			// - finally convert to 32-bit float
+			Temperature: float64(int16(binary.BigEndian.Uint16(raw[j:j+2]))) / 10,
 			Humidity:    int8(raw[j+2]),
 			Time:        time.Now(),
 		})

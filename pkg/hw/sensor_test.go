@@ -9,7 +9,7 @@ import (
 )
 
 func Test_fromBytes(t *testing.T) {
-	input, err := hex.DecodeString("7b00a03e00a54000d03400b53d7fffff00254b7fffff7fffff")
+	input, err := hex.DecodeString("7b00ac4200a03b00c13500b43f7ffffffffe5a7fffff7fffff")
 	require.NoError(t, err)
 
 	readings, err := fromBytes(input)
@@ -20,29 +20,29 @@ func Test_fromBytes(t *testing.T) {
 	expectedReadings := []*Reading{
 		{
 			Sensor:      "1",
-			Temperature: 16,
-			Humidity:    62,
+			Temperature: 17.2,
+			Humidity:    66,
 		},
 		{
 			Sensor:      "2",
-			Temperature: 16.5,
-			Humidity:    64,
+			Temperature: 16,
+			Humidity:    59,
 		},
 		{
 			Sensor:      "3",
-			Temperature: 20.8,
-			Humidity:    52,
+			Temperature: 19.3,
+			Humidity:    53,
 		},
 		{
 			Sensor:      "4",
-			Temperature: 18.1,
-			Humidity:    61,
+			Temperature: 18,
+			Humidity:    63,
 		},
 		// Sensor 5 is not active
 		{
 			Sensor:      "6",
-			Temperature: 3.7,
-			Humidity:    75,
+			Temperature: -0.2,
+			Humidity:    90,
 		},
 	}
 

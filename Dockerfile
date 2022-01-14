@@ -11,7 +11,7 @@ COPY go.sum .
 RUN go mod download
 COPY . .
 # We need a static binary as CGO_ENABLED=1 and dynamic linking does not work using alpine as runtime environment
-RUN GOOS=linux GOARCH=arm64 CGO_ENABLED=1 go build -ldflags "-linkmode external -extldflags -static" -o roomloggo .
+RUN GOOS=linux GOARCH=arm CGO_ENABLED=1 go build -ldflags "-linkmode external -extldflags -static" -o roomloggo .
 
 
 FROM alpine:latest

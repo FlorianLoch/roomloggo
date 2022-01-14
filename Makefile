@@ -1,5 +1,6 @@
 .PHONY: image build run run-container clean push-image test
 
+bin_dir := ./bin
 bin := ./bin/roomloggo
 image_built := ./bin/image_built
 image_pushed := ./bin/image_pushed
@@ -21,7 +22,7 @@ run-container: $(image_built)
 
 
 clean:
-	rm -rf ./bin
+	rm -rf $(bin_dir)
 
 
 push-image: $(image_pushed)
@@ -31,14 +32,19 @@ test:
 	go test ./...
 
 
+$(bin_dir):
+	mkdir -p $(bin_dir)
+
+
 $(image_pushed): $(image_built)
 	docker save $(image_tag) | pv | ssh raspi docker load
 	touch $(image_pushed)
 
-$(bin): $(go_files)
+
+$(bin): $(go_files) | $(bin_dir)
 	CGO_ENABLED=1 go build -o $(bin)
 
 
-$(image_built): $(go_files)
-	docker buildx build --platform linux/arm64/v8 --tag $(image_tag) .
+$(image_built): $(go_files) | $(bin_dir)
+	docker buildx build --platform linux/arm/v7 --tag $(image_tag) .
 	touch $(image_built)

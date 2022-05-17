@@ -9,7 +9,7 @@ import (
 	"github.com/florianloch/roomloggo/pkg/hw"
 )
 
-func StartLoop(interval time.Duration, upstream ...internal.MeasurementsProcessor) {
+func StartLoop(interval time.Duration, downstream ...internal.MeasurementsProcessor) {
 	t := time.NewTicker(interval)
 	defer t.Stop()
 
@@ -19,7 +19,7 @@ func StartLoop(interval time.Duration, upstream ...internal.MeasurementsProcesso
 		} else {
 			// Run this asynchronously, just as a defensive measure in order to avoid a varying reading frequency
 			go func() {
-				for _, u := range upstream {
+				for _, u := range downstream {
 					u.Process(readings)
 				}
 			}()

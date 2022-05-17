@@ -1,7 +1,7 @@
-# The Raspberry will require an arm64 image, so the platform building the image should be arm64 too. If this
-# is not possible, additioniol measures will probably be required
+# The Raspberry will require an arm image, so the platform building the image should be arm too. If this
+# is not possible, additioniol measures will probably be required - like building with `docker buildx`
 # Using an alpine based image for the build is not possible, we need the full toolchain because of cgo
-FROM golang:1.17.5 AS builder
+FROM golang:1.18.2 AS builder
 
 WORKDIR /src/
 # Copy dependency management related files first and download required modules before copying changed code into the

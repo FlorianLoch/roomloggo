@@ -2,17 +2,20 @@ package main
 
 import (
 	"context"
+	"net/http"
 	"os"
 	"time"
 
 	"github.com/alecthomas/kong"
 	kongyaml "github.com/alecthomas/kong-yaml"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
 	"github.com/florianloch/roomloggo/internal"
 	"github.com/florianloch/roomloggo/internal/config"
 	"github.com/florianloch/roomloggo/internal/influx"
+	"github.com/florianloch/roomloggo/internal/prom"
 	"github.com/florianloch/roomloggo/internal/sensor"
 	"github.com/florianloch/roomloggo/pkg/hw"
 )
@@ -51,15 +54,41 @@ func main() {
 	timeoutCtx, cancelFn := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelFn()
 
-	influxClient, err := influx.New(timeoutCtx, cfg.Influx)
-	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to setup client for InfluxDB")
+	processors := []internal.MeasurementsProcessor{
+		sensor.NewIDToNameMapper(cfg.Sensor.Names),
+		internal.ProcessFn(sensor.LogReadings),
+	}
+
+	if cfg.PromExporter.Enabled {
+		promExporter, err := prom.NewPrometheusExporter()
+		if err != nil {
+			log.Fatal().Err(err).Msg("Failed to setup Prometheus exporter")
+		}
+
+		go func() {
+			http.Handle("/metrics", promhttp.Handler())
+
+			log.Info().Msgf("Serving metrics at: http://%s/metrics", cfg.PromExporter.ListenAddr)
+			if err := http.ListenAndServe(cfg.PromExporter.ListenAddr, http.DefaultServeMux); err != nil {
+				log.Fatal().Err(err).Msg("HTTP server of Prometheus exporter crashed")
+			}
+		}()
+
+		processors = append(processors, promExporter)
+	}
+
+	if cfg.Influx.Enabled {
+		influxClient, err := influx.New(timeoutCtx, cfg.Influx)
+		if err != nil {
+			log.Fatal().Err(err).Msg("Failed to setup client for InfluxDB")
+		}
+
+		log.Info().Msgf("Will push measurements to InfluxDB at: %s", cfg.Influx.BaseURL)
+
+		processors = append(processors, influxClient)
 	}
 
 	log.Info().Msg("Setup completed, starting to log data...")
 
-	sensor.StartLoop(cfg.Sensor.Interval,
-		sensor.NewIDToNameMapper(cfg.Sensor.Names),
-		internal.ProcessFn(sensor.LogReadings),
-		influxClient)
+	sensor.StartLoop(cfg.Sensor.Interval, processors...)
 }

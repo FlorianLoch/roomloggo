@@ -1,4 +1,8 @@
+prom-exporter:
+  enabled: true
+  listen-addr: 0.0.0.0:9044 # listen on all interfaces
 influx-db:
+  enabled: true
   base-url: "<YOUR INFLUXDB>"
   api-token: "<YOUR API TOKEN>"
   org: "<YOUR ORG>"
@@ -6,6 +10,6 @@ influx-db:
 sensor:
   interval: "1m"
   names:
-    - "Room 1"
-    - "Room 2"
-    - "Room 3"
+    - "Balcony"
+    - "Bath"
+    - "Fridge"

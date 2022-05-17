@@ -3,13 +3,13 @@ module github.com/florianloch/roomloggo
 go 1.17
 
 require (
-	github.com/alecthomas/kong v0.2.22
+	github.com/alecthomas/kong v0.5.0
 	github.com/alecthomas/kong-yaml v0.1.1
-	github.com/influxdata/influxdb-client-go/v2 v2.6.0
+	github.com/influxdata/influxdb-client-go/v2 v2.8.2
 	github.com/karalabe/hid v1.0.0
 	github.com/prometheus/client_golang v1.12.2
-	github.com/rs/zerolog v1.26.0
-	github.com/stretchr/testify v1.7.0
+	github.com/rs/zerolog v1.26.1
+	github.com/stretchr/testify v1.7.1
 )
 
 require (

@@ -62,12 +62,12 @@ func fromBytes(raw []byte) ([]*Reading, error) {
 		}
 
 		readings = append(readings, &Reading{
-			Sensor: strconv.Itoa(i + 1), // derived from the channel used by the sensor
-			// Whappens here:
+			Sensor: strconv.Itoa(i + 1), // Derived from the channel used by the sensor
+			// What happens here:
 			// - take the two bytes containing the temperature
 			// - decode them as Uint16
 			// - convert to / interpret as signed 16-bit integer
-			// - finally convert to 32-bit float
+			// - finally scale them to 32-bit float
 			Temperature: float64(int16(binary.BigEndian.Uint16(raw[j:j+2]))) / 10,
 			Humidity:    int8(raw[j+2]),
 			Time:        time.Now(),

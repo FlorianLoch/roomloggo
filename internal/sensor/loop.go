@@ -13,10 +13,20 @@ func StartLoop(interval time.Duration, downstream ...internal.MeasurementsProces
 	t := time.NewTicker(interval)
 	defer t.Stop()
 
+	errCount := 0
+
 	for {
 		if readings, err := hw.Read(); err != nil {
 			log.Error().Err(err).Msg("Failed to read data from station")
+
+			errCount++
+
+			if errCount == 3 {
+				log.Fatal().Msg("Reading from sensor failed 3 times in a row. Exiting.")
+			}
 		} else {
+			errCount = 0
+
 			// Run this asynchronously, just as a defensive measure in order to avoid a varying reading frequency
 			go func() {
 				for _, u := range downstream {

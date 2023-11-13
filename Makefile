@@ -2,10 +2,12 @@
 
 bin_dir := ./bin
 bin := ./bin/roomloggo
-image_built := ./bin/image_built
-image_pushed := ./bin/image_pushed
+image_built := ./.make/image_built
+image_pushed := ./.make/image_pushed
+make_dir := ./.make/
 go_files := $(shell find . -name "*.go")
 image_tag := roomloggo
+target_platform := linux/arm64
 
 build: $(bin)
 
@@ -18,11 +20,12 @@ image: $(image_built)
 
 
 run-container: $(image_built)
-	docker run -v $(shell pwd)/roomloggo.config.yaml:/app/roomloggo.config.yaml $(image_tag)
+	podman run -v $(shell pwd)/roomloggo.config.yaml:/app/roomloggo.config.yaml $(image_tag)
 
 
 clean:
 	rm -rf $(bin_dir)
+	rm -rf $(make_dir)
 
 
 push-image: $(image_pushed)
@@ -37,7 +40,7 @@ $(bin_dir):
 
 
 $(image_pushed): $(image_built)
-	docker save $(image_tag) | pv | ssh raspi docker load
+	podman save $(image_tag) | pv | ssh raspi docker load
 	touch $(image_pushed)
 
 
@@ -46,5 +49,5 @@ $(bin): $(go_files) | $(bin_dir)
 
 
 $(image_built): $(go_files) | $(bin_dir)
-	docker buildx build --platform linux/arm/v7 --tag $(image_tag) .
+	podman build --platform $(target_platform) --tag $(image_tag) .
 	touch $(image_built)

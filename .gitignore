@@ -1,2 +1,10 @@
 bin/
+.make/
+
+.DS_Store
+
+roomloggo
+
 roomloggo.config.yaml
+
+.idea/
